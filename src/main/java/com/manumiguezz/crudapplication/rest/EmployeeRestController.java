@@ -1,87 +1,82 @@
 package com.manumiguezz.crudapplication.rest;
 
+import com.manumiguezz.crudapplication.dto.EmployeeRequest;
+import com.manumiguezz.crudapplication.dto.EmployeeResponse;
 import com.manumiguezz.crudapplication.entity.Employee;
 import com.manumiguezz.crudapplication.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/employees")
 public class EmployeeRestController {
 
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
-    @Autowired
-    public EmployeeRestController(EmployeeService theEmployeeService) {
-        employeeService = theEmployeeService;
+    public EmployeeRestController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
-    @GetMapping("/employees")
-    public List<Employee> findAll() {
-        return employeeService.findAll();
+    @GetMapping
+    public List<EmployeeResponse> findAll() {
+        return employeeService.findAll()
+                .stream()
+                .map(EmployeeResponse::fromEntity)
+                .toList();
     }
 
-
-    @GetMapping("/employees/{employeeId}")
-    public Employee getEmployee(@PathVariable int employeeId) {
-
-        Employee theEmployee = employeeService.findById(employeeId);
-
-        if (theEmployee == null) {
-            throw new RuntimeException("Employee id not found - " + employeeId);
-        }
-
-        return theEmployee;
+    @GetMapping("/{employeeId}")
+    public EmployeeResponse getEmployee(@PathVariable int employeeId) {
+        return EmployeeResponse.fromEntity(employeeService.findById(employeeId));
     }
 
+    @PostMapping
+    public ResponseEntity<EmployeeResponse> addEmployee(@Valid @RequestBody EmployeeRequest employeeRequest) {
+        Employee createdEmployee = employeeService.create(toEntity(employeeRequest));
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{employeeId}")
+                .buildAndExpand(createdEmployee.getId())
+                .toUri();
 
-    @PostMapping("/employees")
-    public Employee addEmployee(@RequestBody Employee theEmployee) {
-
-
-        theEmployee.setId(0);
-
-        Employee dbEmployee = employeeService.save(theEmployee);
-
-        return dbEmployee;
+        return ResponseEntity
+                .created(location)
+                .body(EmployeeResponse.fromEntity(createdEmployee));
     }
 
-    @PutMapping("/employees")
-    public Employee updateEmployee(@RequestBody Employee theEmployee) {
+    @PutMapping("/{employeeId}")
+    public EmployeeResponse updateEmployee(
+            @PathVariable int employeeId,
+            @Valid @RequestBody EmployeeRequest employeeRequest
+    ) {
+        Employee updatedEmployee = employeeService.update(employeeId, toEntity(employeeRequest));
 
-        Employee dbEmployee = employeeService.save(theEmployee);
-
-        return dbEmployee;
+        return EmployeeResponse.fromEntity(updatedEmployee);
     }
 
-    @DeleteMapping("/employees/{employeeId}")
-    public String deleteEmployee(@PathVariable int employeeId) {
-
-        Employee tempEmployee = employeeService.findById(employeeId);
-
-        if (tempEmployee == null) {
-            throw new RuntimeException("Employee id not found - " + employeeId);
-        }
-
+    @DeleteMapping("/{employeeId}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable int employeeId) {
         employeeService.deleteById(employeeId);
 
-        return "Deleted employee id - " + employeeId;
+        return ResponseEntity.noContent().build();
     }
 
+    private Employee toEntity(EmployeeRequest employeeRequest) {
+        return new Employee(
+                employeeRequest.firstName(),
+                employeeRequest.lastName(),
+                employeeRequest.email()
+        );
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

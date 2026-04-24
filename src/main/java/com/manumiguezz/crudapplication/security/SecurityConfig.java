@@ -8,24 +8,19 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public UserDetailsManager userDetailsManager (DataSource dataSource){
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-
-        jdbcUserDetailsManager
-                .setUsersByUsernameQuery("select user, psw, active from members where user=?");
-
-        jdbcUserDetailsManager
-                .setAuthoritiesByUsernameQuery("select user, role from roles where user=?");
-
-        return jdbcUserDetailsManager;
+    public UserDetailsManager userDetailsManager(DataSource dataSource) {
+        return new JdbcUserDetailsManager(dataSource);
     }
 
 
@@ -34,14 +29,16 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/api/employees").hasRole("EMPLOYEE")
-                        .requestMatchers(HttpMethod.GET, "/api/employees/**").hasRole("EMPLOYEE")
-                        .requestMatchers(HttpMethod.POST, "/api/employees").hasRole("TL")
-                        .requestMatchers(HttpMethod.PUT, "/api/employees").hasRole("TL")
-                        .requestMatchers(HttpMethod.DELETE, "/api/employees/**").hasRole("ADMIN")
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/employees")).hasRole("EMPLOYEE")
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/employees/**")).hasRole("EMPLOYEE")
+                        .requestMatchers(antMatcher(HttpMethod.POST, "/api/employees")).hasRole("MANAGER")
+                        .requestMatchers(antMatcher(HttpMethod.PUT, "/api/employees/**")).hasRole("MANAGER")
+                        .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/employees/**")).hasRole("ADMIN")
+                        .anyRequest().authenticated()
         );
 
         http.httpBasic(Customizer.withDefaults());
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.csrf(csrf -> csrf.disable());
 
         return http.build();

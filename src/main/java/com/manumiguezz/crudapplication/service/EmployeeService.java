@@ -9,10 +9,12 @@ public interface EmployeeService {
 
     List<Employee> findAll();
 
-    Employee findById(int theId);
+    Employee findById(int employeeId);
 
-    Employee save(Employee theEmployee);
+    Employee create(Employee employee);
 
-    void deleteById(int theId);
+    Employee update(int employeeId, Employee employee);
+
+    void deleteById(int employeeId);
 
 }
