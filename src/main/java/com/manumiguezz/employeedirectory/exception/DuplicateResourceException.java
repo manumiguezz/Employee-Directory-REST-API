@@ -1,4 +1,4 @@
-package com.manumiguezz.crudapplication.exception;
+package com.manumiguezz.employeedirectory.exception;
 
 public class DuplicateResourceException extends RuntimeException {
 

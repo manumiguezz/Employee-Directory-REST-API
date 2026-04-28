@@ -1,6 +1,6 @@
-package com.manumiguezz.crudapplication.dto;
+package com.manumiguezz.employeedirectory.dto;
 
-import com.manumiguezz.crudapplication.entity.Employee;
+import com.manumiguezz.employeedirectory.entity.Employee;
 
 public record EmployeeResponse(
         Integer id,

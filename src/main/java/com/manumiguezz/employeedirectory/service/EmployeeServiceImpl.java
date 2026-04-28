@@ -1,10 +1,10 @@
-package com.manumiguezz.crudapplication.service;
+package com.manumiguezz.employeedirectory.service;
 
 
-import com.manumiguezz.crudapplication.dao.EmployeeRepository;
-import com.manumiguezz.crudapplication.entity.Employee;
-import com.manumiguezz.crudapplication.exception.DuplicateResourceException;
-import com.manumiguezz.crudapplication.exception.ResourceNotFoundException;
+import com.manumiguezz.employeedirectory.dao.EmployeeRepository;
+import com.manumiguezz.employeedirectory.entity.Employee;
+import com.manumiguezz.employeedirectory.exception.DuplicateResourceException;
+import com.manumiguezz.employeedirectory.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 

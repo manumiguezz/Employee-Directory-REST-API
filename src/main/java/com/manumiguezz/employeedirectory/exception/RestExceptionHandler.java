@@ -1,4 +1,4 @@
-package com.manumiguezz.crudapplication.exception;
+package com.manumiguezz.employeedirectory.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;

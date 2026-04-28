@@ -9,13 +9,13 @@ CREATE TABLE `users` (
   `password` char(68) NOT NULL,
   `enabled` tinyint NOT NULL,
   PRIMARY KEY (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `users` 
 VALUES 
-('ramiro','{bcrypt}$2a$10$S7GTZIc/KfegnP9H4GNaCOxHkvu0M32H7f9wg/lHl/c97VQtIoVvm',1),
-('matias','{bcrypt}$2a$10$DWG0SGnfxqDIjx.LrywatevHjod2EbepV0W3t5d1aOoRLjSQuvszS',1),
-('alejo','{bcrypt}$2a$10$0tqmRxOQufHIrIuQWNHa6.M4ei4LbE4NhN6gfUEOOnxpkbzLABGc6',1);
+('ramiro','{bcrypt}$2a$10$ADqzDoca7inE7JQmfDekDeGshwSHl9mbXTuaycnq46sxGZUqg6wrS',1),
+('matias','{bcrypt}$2a$10$Jr6OCkw8ysJJ6qlr/wiB5.Dsnp8oy9fgriVl/QZm5LzxTEXDpr2CK',1),
+('alejo','{bcrypt}$2a$10$i1DRxrfOek0k04mGGui6QuXKIyXLDedmS.PcvmMjks2gJBg/b2L9y',1);
 
 
 CREATE TABLE `authorities` (
@@ -23,7 +23,7 @@ CREATE TABLE `authorities` (
   `authority` varchar(50) NOT NULL,
   UNIQUE KEY `authorities4_idx_1` (`username`,`authority`),
   CONSTRAINT `authorities4_ibfk_1` FOREIGN KEY (`username`) REFERENCES `users` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 INSERT INTO `authorities` 

@@ -1,4 +1,4 @@
-package com.manumiguezz.crudapplication.security;
+package com.manumiguezz.employeedirectory.security;
 
 
 import org.springframework.context.annotation.Bean;
@@ -6,14 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import javax.sql.DataSource;
-
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 public class SecurityConfig {
@@ -26,14 +25,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        PathPatternRequestMatcher.Builder pathMatcher = PathPatternRequestMatcher.withDefaults();
 
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/employees")).hasRole("EMPLOYEE")
-                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/employees/**")).hasRole("EMPLOYEE")
-                        .requestMatchers(antMatcher(HttpMethod.POST, "/api/employees")).hasRole("MANAGER")
-                        .requestMatchers(antMatcher(HttpMethod.PUT, "/api/employees/**")).hasRole("MANAGER")
-                        .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/employees/**")).hasRole("ADMIN")
+                        .requestMatchers(pathMatcher.matcher(HttpMethod.GET, "/api/employees")).hasRole("EMPLOYEE")
+                        .requestMatchers(pathMatcher.matcher(HttpMethod.GET, "/api/employees/{employeeId}")).hasRole("EMPLOYEE")
+                        .requestMatchers(pathMatcher.matcher(HttpMethod.POST, "/api/employees")).hasRole("MANAGER")
+                        .requestMatchers(pathMatcher.matcher(HttpMethod.PUT, "/api/employees/{employeeId}")).hasRole("MANAGER")
+                        .requestMatchers(pathMatcher.matcher(HttpMethod.DELETE, "/api/employees/{employeeId}")).hasRole("ADMIN")
                         .anyRequest().authenticated()
         );
 

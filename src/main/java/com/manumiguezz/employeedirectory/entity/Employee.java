@@ -1,4 +1,4 @@
-package com.manumiguezz.crudapplication.entity;
+package com.manumiguezz.employeedirectory.entity;
 
 import jakarta.persistence.*;
 

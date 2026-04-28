@@ -1,4 +1,4 @@
-package com.manumiguezz.crudapplication.dto;
+package com.manumiguezz.employeedirectory.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,9 +1,9 @@
-package com.manumiguezz.crudapplication.rest;
+package com.manumiguezz.employeedirectory.rest;
 
-import com.manumiguezz.crudapplication.dto.EmployeeRequest;
-import com.manumiguezz.crudapplication.dto.EmployeeResponse;
-import com.manumiguezz.crudapplication.entity.Employee;
-import com.manumiguezz.crudapplication.service.EmployeeService;
+import com.manumiguezz.employeedirectory.dto.EmployeeRequest;
+import com.manumiguezz.employeedirectory.dto.EmployeeResponse;
+import com.manumiguezz.employeedirectory.entity.Employee;
+import com.manumiguezz.employeedirectory.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

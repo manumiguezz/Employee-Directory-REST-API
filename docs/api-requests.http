@@ -1,0 +1,57 @@
+@baseUrl = http://localhost:8080
+@employeeUsername = ramiro
+@managerUsername = matias
+@adminUsername = alejo
+@password = examplepass
+
+### List employees
+GET {{baseUrl}}/api/employees
+Authorization: Basic {{employeeUsername}} {{password}}
+
+### Get one employee
+GET {{baseUrl}}/api/employees/1
+Authorization: Basic {{employeeUsername}} {{password}}
+
+### Create employee
+POST {{baseUrl}}/api/employees
+Authorization: Basic {{managerUsername}} {{password}}
+Content-Type: application/json
+
+{
+  "firstName": "Laura",
+  "lastName": "Gomez",
+  "email": "laura.gomez@mail.com"
+}
+
+### Update employee
+PUT {{baseUrl}}/api/employees/1
+Authorization: Basic {{managerUsername}} {{password}}
+Content-Type: application/json
+
+{
+  "firstName": "Manuel",
+  "lastName": "Miguez",
+  "email": "manuel.updated@mail.com"
+}
+
+### Delete employee
+DELETE {{baseUrl}}/api/employees/1
+Authorization: Basic {{adminUsername}} {{password}}
+
+### Unauthorized request
+GET {{baseUrl}}/api/employees
+
+### Validation error
+POST {{baseUrl}}/api/employees
+Authorization: Basic {{managerUsername}} {{password}}
+Content-Type: application/json
+
+{
+  "firstName": "",
+  "lastName": "Gomez",
+  "email": "invalid-email"
+}
+
+### Forbidden request
+DELETE {{baseUrl}}/api/employees/1
+Authorization: Basic {{managerUsername}} {{password}}

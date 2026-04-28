@@ -1,94 +1,101 @@
 # Employee Directory REST API
 
-Spring Boot REST API for managing employee records with role-based access control, request validation, consistent error responses, and practical integration tests.
+[![CI](https://github.com/manumiguezz/employee-directory-rest-api/actions/workflows/ci.yml/badge.svg)](https://github.com/manumiguezz/employee-directory-rest-api/actions/workflows/ci.yml)
 
-This project was originally built as a CRUD API and later refactored to be more portfolio-ready by improving REST design, security consistency, configuration hygiene, testability, and documentation.
+Spring Boot REST API for managing employee records with role-based access control, request validation, consistent error responses, MySQL persistence, and H2-backed automated tests.
+
+This project is intentionally scoped as a small but polished backend API sample. It focuses on clean REST behavior, maintainable structure, validation, security rules, documentation, and repeatable API testing practices.
 
 ## What This Project Demonstrates
 
-- RESTful CRUD operations for employee management
+- CRUD endpoints for employee management
+- DTO-based request and response contracts
 - Role-based authorization with Spring Security and HTTP Basic auth
-- Request validation and consistent JSON error handling
-- Persistence with Spring Data JPA
-- MySQL-ready configuration for default runtime usage
-- H2-backed local and test profiles for quick execution and reliable automated tests
-- Integration testing of happy paths, validation failures, authorization rules, and edge cases
+- Bean validation for request quality
+- Centralized JSON error handling using Spring `ProblemDetail`
+- Spring Data JPA persistence
+- MySQL runtime configuration with environment variables
+- H2 local and test profiles for quick review
+- Integration tests for happy paths, validation errors, authorization, and edge cases
 
 ## Tech Stack
 
 - Java 17
-- Spring Boot 3
+- Spring Boot 3.5
 - Spring Web
 - Spring Data JPA
 - Spring Security
-- Maven Wrapper
 - MySQL
 - H2 Database
+- Maven Wrapper
 - JUnit 5
 - MockMvc
 
-## Architecture Overview
+## Architecture
 
-The application follows a simple layered structure:
+The application uses a simple layered structure:
 
-- `rest`: controller layer exposing the API contract
-- `service`: business logic and orchestration
-- `dao`: JPA repository access
+- `rest`: REST controllers and endpoint behavior
+- `service`: business rules and orchestration
+- `dao`: Spring Data JPA repository access
 - `entity`: persistence model
-- `dto`: request and response objects used by the API
+- `dto`: API request and response records
 - `exception`: centralized REST exception handling
 
-This is intentionally small and realistic for a portfolio CRUD API rather than an overengineered enterprise sample.
+The structure is deliberately compact so the project stays realistic for a portfolio REST API.
 
 ## Authentication and Roles
 
-The API uses HTTP Basic authentication with role-based authorization:
+The API uses HTTP Basic authentication with these roles:
 
-- `EMPLOYEE`: can read employee data
-- `MANAGER`: can create and update employee data
-- `ADMIN`: can delete employee data
+| Role | Permissions |
+| --- | --- |
+| `EMPLOYEE` | Read employees |
+| `MANAGER` | Create and update employees |
+| `ADMIN` | Delete employees |
 
-Demo credentials for the `local` profile:
+Demo credentials for the H2 `local` profile:
 
-- `ramiro / examplepass` -> `EMPLOYEE`
-- `matias / examplepass` -> `MANAGER`
-- `alejo / examplepass` -> `ADMIN`
+| Username | Password | Role |
+| --- | --- | --- |
+| `ramiro` | `examplepass` | `EMPLOYEE` |
+| `matias` | `examplepass` | `EMPLOYEE`, `MANAGER` |
+| `alejo` | `examplepass` | `EMPLOYEE`, `MANAGER`, `ADMIN` |
 
-## Running the Project
+## Running Locally
 
-### Option 1: Quick local run with H2
+### Quick Run with H2
 
-This is the easiest way to review the project without setting up MySQL.
+Use the `local` profile to run the API without installing MySQL:
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-The application starts on `http://localhost:8080`.
+The API starts at `http://localhost:8080`.
 
-### Option 2: Run with MySQL
+### Run with MySQL
 
-Set the datasource values through environment variables:
+Create the database using the scripts in [`mysqlscripts`](mysqlscripts), then provide datasource configuration through environment variables:
 
 ```bash
 export DB_URL=jdbc:mysql://localhost:3306/employee_directory
-export DB_USERNAME=springstudent
-export DB_PASSWORD=springstudent
+export DB_USERNAME=your_mysql_user
+export DB_PASSWORD=your_mysql_password
 ```
 
-Then start the app:
+Start the application:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-### MySQL Setup Scripts
+## Database Scripts
 
-Use the SQL scripts in [`mysqlscripts`](/Users/manuelmiguezz/Documents/Code/Projects/Java/CompanySpringBootRESTAPI/mysqlscripts):
-
-- [`employee-directory.sql`](/Users/manuelmiguezz/Documents/Code/Projects/Java/CompanySpringBootRESTAPI/mysqlscripts/employee-directory.sql): employee table and seed data
-- [`spring-security-users.sql`](/Users/manuelmiguezz/Documents/Code/Projects/Java/CompanySpringBootRESTAPI/mysqlscripts/spring-security-users.sql): quick-start auth seed with demo passwords
-- [`spring-security-users-bcrypt.sql`](/Users/manuelmiguezz/Documents/Code/Projects/Java/CompanySpringBootRESTAPI/mysqlscripts/spring-security-users-bcrypt.sql): hashed-password variant
+- [`mysqlscripts/employee-directory.sql`](mysqlscripts/employee-directory.sql): employee table and seed data
+- [`mysqlscripts/spring-security-users.sql`](mysqlscripts/spring-security-users.sql): quick-start users with `{noop}` demo passwords
+- [`mysqlscripts/spring-security-users-bcrypt.sql`](mysqlscripts/spring-security-users-bcrypt.sql): same users with BCrypt hashes for `examplepass`
+- [`mysqlscripts/spring-security-finished.sql`](mysqlscripts/spring-security-finished.sql): BCrypt security setup aligned with the application roles
 
 ## API Endpoints
 
@@ -96,19 +103,19 @@ Use the SQL scripts in [`mysqlscripts`](/Users/manuelmiguezz/Documents/Code/Proj
 | --- | --- | --- | --- |
 | `GET` | `/api/employees` | `EMPLOYEE` | List all employees |
 | `GET` | `/api/employees/{id}` | `EMPLOYEE` | Get one employee by id |
-| `POST` | `/api/employees` | `MANAGER` | Create a new employee |
-| `PUT` | `/api/employees/{id}` | `MANAGER` | Update an existing employee |
+| `POST` | `/api/employees` | `MANAGER` | Create an employee |
+| `PUT` | `/api/employees/{id}` | `MANAGER` | Update an employee |
 | `DELETE` | `/api/employees/{id}` | `ADMIN` | Delete an employee |
 
 ## Example Requests
 
-### Get all employees
+List employees:
 
 ```bash
 curl -u ramiro:examplepass http://localhost:8080/api/employees
 ```
 
-### Create a new employee
+Create an employee:
 
 ```bash
 curl -u matias:examplepass \
@@ -121,7 +128,7 @@ curl -u matias:examplepass \
   http://localhost:8080/api/employees
 ```
 
-### Example success response
+Successful response:
 
 ```json
 {
@@ -132,7 +139,7 @@ curl -u matias:examplepass \
 }
 ```
 
-### Example validation error response
+Validation error response:
 
 ```json
 {
@@ -140,7 +147,7 @@ curl -u matias:examplepass \
   "title": "Validation failed",
   "status": 400,
   "detail": "One or more request fields are invalid.",
-  "timestamp": "2026-04-24T13:55:33.000000-03:00",
+  "timestamp": "2026-04-27T22:55:00.000000-03:00",
   "path": "/api/employees",
   "errors": {
     "firstName": "firstName is required",
@@ -149,28 +156,31 @@ curl -u matias:examplepass \
 }
 ```
 
+Manual request examples are available in [`docs/api-requests.http`](docs/api-requests.http).
+
 ## Testing
 
-Run the automated test suite with:
+Run the automated tests:
 
 ```bash
 ./mvnw test
 ```
 
-The current tests cover:
+The test suite covers:
 
 - application context startup
 - authenticated read access
+- unauthenticated requests
 - role-based authorization
-- successful employee creation
+- successful create, update, and delete flows
 - validation failures
+- malformed JSON requests
 - duplicate email conflicts
 - not-found behavior
-- delete permissions and delete flow
 
 ## Verification Commands
 
-Commands used during the review and refactor:
+Useful commands for local review:
 
 ```bash
 ./mvnw test
@@ -178,31 +188,14 @@ Commands used during the review and refactor:
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-## Improvements Made During Refactor
-
-- removed unused Spring Data REST setup
-- externalized datasource configuration
-- added a `local` H2 profile and a dedicated `test` profile
-- introduced DTOs for API input and output
-- added bean validation for employee requests
-- improved REST status codes and endpoint consistency
-- added centralized exception handling with structured JSON errors
-- aligned security roles with the seeded data
-- added integration tests for API and authorization flows
-- stopped tracking generated `target/` build output
-
 ## Future Improvements
 
-- add pagination and filtering for employee listings
-- document the API with OpenAPI or Swagger
-- add migration tooling such as Flyway or Liquibase
-- expand test coverage for repository and service-level behavior
-- add CI automation for build and test execution
+- Add pagination and filtering for employee listings
+- Document the API with OpenAPI or Swagger
+- Add Flyway or Liquibase migrations
+- Add Docker Compose for MySQL-based local runs
+- Expand service-level test coverage
 
-## Repository Naming Note
+## QA Automation Relevance
 
-The current repository name is functional but generic. A clearer portfolio-facing name would be:
-
-- `employee-directory-rest-api`
-
-That name is easier to understand at a glance on GitHub, LinkedIn, a portfolio site, or a CV.
+This project supports a QA Automation Engineer profile by showing practical API understanding: authentication, authorization, request validation, error contracts, persistence behavior, repeatable test data, integration testing, and API smoke-test documentation.

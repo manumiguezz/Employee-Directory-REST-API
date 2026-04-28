@@ -1,7 +1,7 @@
-package com.manumiguezz.crudapplication.service;
+package com.manumiguezz.employeedirectory.service;
 
 
-import com.manumiguezz.crudapplication.entity.Employee;
+import com.manumiguezz.employeedirectory.entity.Employee;
 
 import java.util.List;
 
